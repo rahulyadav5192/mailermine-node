@@ -22,6 +22,7 @@ import type {
 
 export interface EmailsApiSendEmailOperationRequest {
   sendEmailRequest: SendEmailRequest;
+  idempotencyKey?: string;
 }
 
 /**
@@ -46,6 +47,10 @@ export class EmailsApi extends runtime.BaseAPI {
     const headerParameters: runtime.HTTPHeaders = {};
 
     headerParameters['Content-Type'] = 'application/json';
+
+    if (requestParameters['idempotencyKey'] != null) {
+      headerParameters['Idempotency-Key'] = String(requestParameters['idempotencyKey']);
+    }
 
     if (this.configuration && this.configuration.accessToken) {
       const token = this.configuration.accessToken;

@@ -1,6 +1,6 @@
 # @mailermine/generated@1.0.0
 
-A TypeScript SDK client for the 127.0.0.1 API.
+A TypeScript SDK client for the mailermine.com API.
 
 ## Usage
 
@@ -52,7 +52,7 @@ example().catch(console.error);
 
 ### API Endpoints
 
-All URIs are relative to *http://127.0.0.1:8000/api/v1*
+All URIs are relative to *https://mailermine.com/api/v1*
 
 | Class | Method | HTTP request | Description
 | ----- | ------ | ------------ | -------------
@@ -449,4 +449,4 @@ npm publish
 
 ## License
 
-[MailerMine API License](http://127.0.0.1:8000/legal/terms)
+[MailerMine API License](https://mailermine.com/terms)

@@ -375,7 +375,7 @@ export class CampaignsApi extends runtime.BaseAPI {
   }
 
   /**
-   * Render the current campaign subject and bodies without sending. Required scope: `campaigns.read`.
+   * Render the current campaign subject and bodies without sending. Requires an assigned template (`template_uuid` on create/update or via set-template). Returns HTTP 422 with `template` when no template is assigned. Required scope: `campaigns.read`.
    * Preview campaign
    */
   async previewCampaignRaw(
@@ -389,7 +389,7 @@ export class CampaignsApi extends runtime.BaseAPI {
   }
 
   /**
-   * Render the current campaign subject and bodies without sending. Required scope: `campaigns.read`.
+   * Render the current campaign subject and bodies without sending. Requires an assigned template (`template_uuid` on create/update or via set-template). Returns HTTP 422 with `template` when no template is assigned. Required scope: `campaigns.read`.
    * Preview campaign
    */
   async previewCampaign(

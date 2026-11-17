@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-export const BASE_PATH = 'http://127.0.0.1:8000/api/v1'.replace(/\/+$/, '');
+export const BASE_PATH = 'https://mailermine.com/api/v1'.replace(/\/+$/, '');
 
 export interface ConfigurationParameters {
   basePath?: string; // override base path

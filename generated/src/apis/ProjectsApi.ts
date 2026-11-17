@@ -159,7 +159,7 @@ export class ProjectsApi extends runtime.BaseAPI {
   }
 
   /**
-   * Soft-delete a project. Deletion is blocked while active domains, queued messages, or active campaigns remain. Required scope: `projects.write`.
+   * Deactivate a project (status becomes inactive). Related data such as API keys, domains, and campaigns is kept. Deletion is blocked while queued messages or active campaigns remain. Required scope: `projects.write`.
    * Delete project
    */
   async deleteProjectRaw(
@@ -173,7 +173,7 @@ export class ProjectsApi extends runtime.BaseAPI {
   }
 
   /**
-   * Soft-delete a project. Deletion is blocked while active domains, queued messages, or active campaigns remain. Required scope: `projects.write`.
+   * Deactivate a project (status becomes inactive). Related data such as API keys, domains, and campaigns is kept. Deletion is blocked while queued messages or active campaigns remain. Required scope: `projects.write`.
    * Delete project
    */
   async deleteProject(

@@ -1733,7 +1733,7 @@ export interface CampaignEvent {
    */
   source: string;
   /**
-   * Provider/event metadata. @var array<string, mixed>|null
+   * Customer-safe event details. @var array<string, mixed>|null
    * @type {Array<any>}
    * @memberof CampaignEvent
    */
@@ -2791,6 +2791,11 @@ export const CreateApiKeyRequestScopesEnum = {
   ProjectsWrite: 'projects.write',
   ApiKeysRead: 'api_keys.read',
   ApiKeysWrite: 'api_keys.write',
+  WebhooksRead: 'webhooks.read',
+  WebhooksWrite: 'webhooks.write',
+  SuppressionsRead: 'suppressions.read',
+  SuppressionsWrite: 'suppressions.write',
+  EventsRead: 'events.read',
   Admin: 'admin',
 } as const;
 export type CreateApiKeyRequestScopesEnum =
@@ -2816,6 +2821,11 @@ export const CreateApiKeyRequestPermissionsEnum = {
   ProjectsWrite: 'projects.write',
   ApiKeysRead: 'api_keys.read',
   ApiKeysWrite: 'api_keys.write',
+  WebhooksRead: 'webhooks.read',
+  WebhooksWrite: 'webhooks.write',
+  SuppressionsRead: 'suppressions.read',
+  SuppressionsWrite: 'suppressions.write',
+  EventsRead: 'events.read',
   Admin: 'admin',
 } as const;
 export type CreateApiKeyRequestPermissionsEnum =
@@ -3238,13 +3248,13 @@ export interface CreateSuppressionRequest {
  */
 export interface CreateTagRequest {
   /**
-   *
+   * Project-unique tag name. Tags do not support a `description` field.
    * @type {string}
    * @memberof CreateTagRequest
    */
   name: string;
   /**
-   *
+   * Optional display color in hex notation.
    * @type {string}
    * @memberof CreateTagRequest
    */
@@ -5296,7 +5306,7 @@ export interface ProjectResource {
    */
   defaultSender: string | null;
   /**
-   * Project lifecycle status. @var 'active'|'archived' @example active
+   * Project lifecycle status. @var 'active'|'archived'|'inactive' @example active
    * @type {string}
    * @memberof ProjectResource
    */
@@ -6054,7 +6064,7 @@ export interface TagResource {
    */
   id: string;
   /**
-   * Project-unique tag name. @example vip
+   * Project-unique tag name. Tags do not include a description field. @example vip
    * @type {string}
    * @memberof TagResource
    */
@@ -6111,13 +6121,19 @@ export interface TagResponse {
 }
 
 /**
- *
+ * | |
+ * |---|
+ * | `classic` <br/>  |
+ * | `modern` <br/>  |
+ * | `minimal` <br/>  |
+ * | `none` <br/> Email Studio / full custom HTML — no auto header/footer chrome. |
  * @export
  */
 export const TemplateLayoutStyle = {
   Classic: 'classic',
   Modern: 'modern',
   Minimal: 'minimal',
+  None: 'none',
 } as const;
 export type TemplateLayoutStyle = (typeof TemplateLayoutStyle)[keyof typeof TemplateLayoutStyle];
 
@@ -6560,7 +6576,7 @@ export interface TimelineEvent {
    */
   source: string;
   /**
-   * Provider-specific payload.
+   * Customer-safe event details. Never includes raw provider infrastructure metadata.
    * @type {Array<any>}
    * @memberof TimelineEvent
    */
@@ -6665,6 +6681,11 @@ export const UpdateApiKeyRequestScopesEnum = {
   ProjectsWrite: 'projects.write',
   ApiKeysRead: 'api_keys.read',
   ApiKeysWrite: 'api_keys.write',
+  WebhooksRead: 'webhooks.read',
+  WebhooksWrite: 'webhooks.write',
+  SuppressionsRead: 'suppressions.read',
+  SuppressionsWrite: 'suppressions.write',
+  EventsRead: 'events.read',
   Admin: 'admin',
 } as const;
 export type UpdateApiKeyRequestScopesEnum =
@@ -6690,6 +6711,11 @@ export const UpdateApiKeyRequestPermissionsEnum = {
   ProjectsWrite: 'projects.write',
   ApiKeysRead: 'api_keys.read',
   ApiKeysWrite: 'api_keys.write',
+  WebhooksRead: 'webhooks.read',
+  WebhooksWrite: 'webhooks.write',
+  SuppressionsRead: 'suppressions.read',
+  SuppressionsWrite: 'suppressions.write',
+  EventsRead: 'events.read',
   Admin: 'admin',
 } as const;
 export type UpdateApiKeyRequestPermissionsEnum =
@@ -7038,7 +7064,7 @@ export interface UpdateSegmentRequest {
    * @type {UpdateSegmentRequestRules}
    * @memberof UpdateSegmentRequest
    */
-  rules: UpdateSegmentRequestRules;
+  rules?: UpdateSegmentRequestRules;
 }
 /**
  *
@@ -7077,13 +7103,13 @@ export type UpdateSegmentRequestRulesLogicEnum =
  */
 export interface UpdateTagRequest {
   /**
-   *
+   * Updated project-unique tag name. Tags do not support a `description` field.
    * @type {string}
    * @memberof UpdateTagRequest
    */
   name?: string;
   /**
-   *
+   * Updated display color in hex notation; null clears it.
    * @type {string}
    * @memberof UpdateTagRequest
    */

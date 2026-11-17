@@ -1,6 +1,6 @@
 # EventsApi
 
-All URIs are relative to *http://127.0.0.1:8000/api/v1*
+All URIs are relative to *https://mailermine.com/api/v1*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
@@ -122,7 +122,7 @@ async function example() {
     campaign: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
     // string | Filter by message UUID. (optional)
     message: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
-    // string | Free-text search across recipient and payload. (optional)
+    // string | Free-text search across recipient. (optional)
     search: search_example,
     // string | Filter events on or after this ISO-8601 date. (optional)
     from: 2013-10-20T19:20:30+01:00,
@@ -153,7 +153,7 @@ example().catch(console.error);
 | **source** | `string` | Filter by event source. | [Optional] [Defaults to `undefined`] |
 | **campaign** | `string` | Filter by campaign UUID. | [Optional] [Defaults to `undefined`] |
 | **message** | `string` | Filter by message UUID. | [Optional] [Defaults to `undefined`] |
-| **search** | `string` | Free-text search across recipient and payload. | [Optional] [Defaults to `undefined`] |
+| **search** | `string` | Free-text search across recipient. | [Optional] [Defaults to `undefined`] |
 | **from** | `string` | Filter events on or after this ISO-8601 date. | [Optional] [Defaults to `undefined`] |
 | **to** | `string` | Filter events on or before this ISO-8601 date. | [Optional] [Defaults to `undefined`] |
 | **perPage** | `number` | Items per page (default 25). | [Optional] [Defaults to `undefined`] |

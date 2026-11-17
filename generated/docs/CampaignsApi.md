@@ -1,6 +1,6 @@
 # CampaignsApi
 
-All URIs are relative to *http://127.0.0.1:8000/api/v1*
+All URIs are relative to *https://mailermine.com/api/v1*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
@@ -346,7 +346,7 @@ example().catch(console.error);
 
 Preview campaign
 
-Render the current campaign subject and bodies without sending. Required scope: &#x60;campaigns.read&#x60;.
+Render the current campaign subject and bodies without sending. Requires an assigned template (&#x60;template_uuid&#x60; on create/update or via set-template). Returns HTTP 422 with &#x60;template&#x60; when no template is assigned. Required scope: &#x60;campaigns.read&#x60;.
 
 ### Example
 
@@ -407,12 +407,12 @@ example().catch(console.error);
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Campaign preview rendered. |  * X-RateLimit-Limit - Maximum requests per window. <br>  * X-RateLimit-Remaining - Requests remaining in the current window. <br>  * X-RateLimit-Reset - Unix timestamp when the current window resets. <br>  |
+| **422** | Validation failed or plan limit exceeded. |  -  |
 | **400** | Malformed JSON or invalid request. |  -  |
 | **401** | Missing or invalid API key. |  -  |
 | **403** | Account suspended, feature denied, or cross-project access blocked. |  -  |
 | **404** | Resource not found. |  -  |
 | **409** | Request conflicts with current state. |  -  |
-| **422** | Validation failed or plan limit exceeded. |  -  |
 | **429** | Rate limit exceeded. Retry after the &#x60;Retry-After&#x60; header value. |  -  |
 | **500** | Unexpected server error. |  -  |
 

@@ -1,6 +1,6 @@
 # MessagesApi
 
-All URIs are relative to *http://127.0.0.1:8000/api/v1*
+All URIs are relative to *https://mailermine.com/api/v1*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
@@ -37,7 +37,7 @@ async function example() {
 
   const body = {
     // string | The message UUID
-    message: message_example,
+    message: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
   } satisfies GetMessageRequest;
 
   try {
@@ -213,7 +213,7 @@ async function example() {
 
   const body = {
     // string | The message UUID
-    message: message_example,
+    message: 38400000-8cf0-11bd-b23e-10b96e4ef00d,
   } satisfies MessageEventsRequest;
 
   try {
@@ -253,9 +253,9 @@ example().catch(console.error);
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Message events retrieved. |  * X-RateLimit-Limit - Maximum requests per window. <br>  * X-RateLimit-Remaining - Requests remaining in the current window. <br>  * X-RateLimit-Reset - Unix timestamp when the current window resets. <br>  |
-| **404** | Resource not found. |  -  |
 | **401** | Missing or invalid API key. |  -  |
 | **403** | Account suspended, feature denied, or cross-project access blocked. |  -  |
+| **404** | Resource not found. |  -  |
 | **429** | Rate limit exceeded. Retry after the &#x60;Retry-After&#x60; header value. |  -  |
 | **400** | Malformed JSON or invalid request. |  -  |
 | **409** | Request conflicts with current state. |  -  |
