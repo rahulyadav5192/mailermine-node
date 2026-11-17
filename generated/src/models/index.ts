@@ -5091,6 +5091,7 @@ export const MessageStatus = {
   Rejected: 'rejected',
   Failed: 'failed',
   Deferred: 'deferred',
+  Held: 'held',
 } as const;
 export type MessageStatus = (typeof MessageStatus)[keyof typeof MessageStatus];
 
