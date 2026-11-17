@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-17
+
+### Added
+
+- Automatic retries with backoff for 429/502/503/504 and network errors,
+  honouring `Retry-After` (`maxRetries`, default 2; `maxRetryDelay`, default
+  30s). POSTs are only replayed when they carry an `Idempotency-Key`.
+- `emails.send(input, { idempotencyKey })`; sends get a random key by default
+  so SDK retries never deliver twice.
+- `client.rateLimit` and `error.rateLimit` (`RateLimitInfo`), `error.isRetryable`.
+- `MissingScopeError` (subclass of `PlanError`) with `missingScopes` for 403
+  responses caused by a missing API key scope.
+- `Scopes` / `ScopePresets`, including `webhooks.*`, `suppressions.*` and
+  `events.read`.
+- `Webhooks.verifyHeaders()`.
+
+### Fixed
+
+- `Webhooks.verify()` could never validate a real MailerMine delivery: the
+  server signs `{timestamp}.{body}`. It now accepts the timestamp and rejects
+  stale deliveries (5 minute default); without a timestamp it keeps the old
+  body-only check.
+
+### Changed
+
+- Regenerated the OpenAPI client from the current API spec.
+
 ## [1.0.0] - 2026-07-18
 
 First stable, production release. Full public-surface parity with the

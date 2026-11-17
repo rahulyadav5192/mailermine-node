@@ -1,6 +1,7 @@
 
 # TemplateLayoutStyle
 
+| | |---| | `classic` <br/>  | | `modern` <br/>  | | `minimal` <br/>  | | `none` <br/> Email Studio / full custom HTML — no auto header/footer chrome. |
 
 ## Properties
 

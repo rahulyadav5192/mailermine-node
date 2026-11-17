@@ -1,9 +1,8 @@
 import { Configuration } from './config/index.js';
 import type { ConfigurationOptions } from './config/types.js';
-import {
-  createInternalApis,
-  type InternalApis,
-} from './internal/generated-client.js';
+import { createInternalApis, type InternalApis } from './internal/generated-client.js';
+import type { TransportState } from './internal/http.js';
+import type { RateLimitInfo } from './support/rate-limit.js';
 import { Analytics } from './resources/analytics.js';
 import { ApiKeys } from './resources/api-keys.js';
 import { Audiences } from './resources/audiences.js';
@@ -45,6 +44,7 @@ export class MailerMine {
   readonly configuration: Configuration;
 
   private readonly apis: InternalApis;
+  private readonly transport: TransportState = { lastRateLimit: null };
   private emailsResource?: Emails;
   private projectsResource?: Projects;
   private apiKeysResource?: ApiKeys;
@@ -69,7 +69,15 @@ export class MailerMine {
       apiKeyOrOptions instanceof Configuration
         ? apiKeyOrOptions
         : Configuration.create(apiKeyOrOptions);
-    this.apis = createInternalApis(this.configuration);
+    this.apis = createInternalApis(this.configuration, this.transport);
+  }
+
+  /**
+   * Rate-limit state from the most recent API response (null until a
+   * response carrying `X-RateLimit-*` headers has been received).
+   */
+  get rateLimit(): RateLimitInfo | null {
+    return this.transport.lastRateLimit;
   }
 
   /** Transactional email operations. */

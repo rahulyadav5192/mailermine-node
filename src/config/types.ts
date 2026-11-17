@@ -25,6 +25,20 @@ export interface ConfigurationOptions {
   userAgent?: string;
 
   /**
+   * How many times a rate-limited (429), temporarily unavailable
+   * (502/503/504) or network-failed request is retried. Defaults to 2;
+   * 0 disables retries. Email sends always carry an Idempotency-Key, so a
+   * retry is never delivered twice.
+   */
+  maxRetries?: number;
+
+  /**
+   * Longest single wait between retries, in milliseconds. A 429 asking to
+   * wait longer than this is thrown as a RateLimitError. Defaults to 30_000.
+   */
+  maxRetryDelay?: number;
+
+  /**
    * Optional fetch implementation. Useful for tests and custom transports.
    * @internal
    */
@@ -39,5 +53,7 @@ export interface ResolvedConfiguration {
   readonly baseUrl: string;
   readonly timeout: number;
   readonly userAgent: string;
+  readonly maxRetries: number;
+  readonly maxRetryDelay: number;
   readonly fetchApi?: typeof fetch;
 }

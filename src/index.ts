@@ -9,6 +9,8 @@ export { Configuration } from './config/index.js';
 export type { ConfigurationOptions, ResolvedConfiguration } from './config/types.js';
 export {
   DEFAULT_BASE_URL,
+  DEFAULT_MAX_RETRIES,
+  DEFAULT_MAX_RETRY_DELAY_MS,
   DEFAULT_TIMEOUT_MS,
   DEFAULT_USER_AGENT,
   VERSION,
@@ -16,6 +18,7 @@ export {
 export {
   ApiError,
   AuthenticationError,
+  MissingScopeError,
   NotFoundError,
   PlanError,
   RateLimitError,
@@ -113,6 +116,7 @@ export type {
   SegmentRules,
   ScheduleCampaignInput,
   SendEmailInput,
+  SendEmailOptions,
   SortDirection,
   Tag,
   TagAssignmentInput,
@@ -149,4 +153,6 @@ export type {
   WebhookListOptions,
 } from './resources/index.js';
 export { Collection, Pagination, Response } from './support/responses.js';
+export { RateLimitInfo } from './support/rate-limit.js';
+export { ScopePresets, Scopes, type Scope } from './support/scopes.js';
 export type { JsonObject, JsonPrimitive, JsonValue } from './types/json.js';

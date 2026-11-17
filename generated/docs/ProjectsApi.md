@@ -1,6 +1,6 @@
 # ProjectsApi
 
-All URIs are relative to *http://127.0.0.1:8000/api/v1*
+All URIs are relative to *https://mailermine.com/api/v1*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
@@ -97,7 +97,7 @@ example().catch(console.error);
 
 Delete project
 
-Soft-delete a project. Deletion is blocked while active domains, queued messages, or active campaigns remain. Required scope: &#x60;projects.write&#x60;.
+Deactivate a project (status becomes inactive). Related data such as API keys, domains, and campaigns is kept. Deletion is blocked while queued messages or active campaigns remain. Required scope: &#x60;projects.write&#x60;.
 
 ### Example
 

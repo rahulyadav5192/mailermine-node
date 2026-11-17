@@ -1,16 +1,13 @@
 import type { InternalEmailsApi } from '../internal/generated-client.js';
 import type { Collection, Response } from '../support/responses.js';
-import {
-  toCollection,
-  toGeneratedRequest,
-  toResponse,
-} from '../support/serialization.js';
+import { toCollection, toGeneratedRequest, toResponse } from '../support/serialization.js';
 import { BaseResource } from './base.js';
 import type {
   EmailEvent,
   EmailListOptions,
   EmailMessage,
   SendEmailInput,
+  SendEmailOptions,
 } from './types.js';
 
 /**
@@ -40,14 +37,31 @@ export class Emails extends BaseResource {
    *   text: 'Hello',
    * });
    * ```
+   *
+   * Pass `{ idempotencyKey }` to make retries from your own code safe:
+   * the same key never sends twice.
    */
-  async send(input: SendEmailInput): Promise<Response<EmailMessage>> {
+  async send(
+    input: SendEmailInput,
+    options: SendEmailOptions = {},
+  ): Promise<Response<EmailMessage>> {
+    const { idempotencyKey } = options;
+    if (
+      idempotencyKey !== undefined &&
+      (typeof idempotencyKey !== 'string' || idempotencyKey === '' || idempotencyKey.length > 255)
+    ) {
+      throw new TypeError('idempotencyKey must be a non-empty string of at most 255 characters.');
+    }
+
     return this.execute(async () => {
       const body = toGeneratedRequest({
         ...input,
         to: Array.isArray(input.to) ? [...input.to] : [input.to],
       });
-      return toResponse<EmailMessage>(await this.api.send(body));
+      // Without a caller key the transport adds a random one, so SDK retries are safe.
+      return toResponse<EmailMessage>(
+        await this.api.send(body, idempotencyKey !== undefined ? { idempotencyKey } : {}),
+      );
     });
   }
 
@@ -62,17 +76,13 @@ export class Emails extends BaseResource {
    * Retrieve a single message by UUID.
    */
   async get(messageId: string): Promise<Response<EmailMessage>> {
-    return this.execute(async () =>
-      toResponse<EmailMessage>(await this.api.get(messageId)),
-    );
+    return this.execute(async () => toResponse<EmailMessage>(await this.api.get(messageId)));
   }
 
   /**
    * Retrieve lifecycle events for a single message.
    */
   async events(messageId: string): Promise<Collection<EmailEvent>> {
-    return this.execute(async () =>
-      toCollection<EmailEvent>(await this.api.events(messageId)),
-    );
+    return this.execute(async () => toCollection<EmailEvent>(await this.api.events(messageId)));
   }
 }

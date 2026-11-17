@@ -21,6 +21,16 @@ export interface EmailAttachmentInput {
   contentType?: string;
 }
 
+/** Per-request options for {@link Emails.send}. */
+export interface SendEmailOptions {
+  /**
+   * Unique key (max 255 chars). Repeating a send with the same key and body
+   * returns the original response instead of sending again. Generated
+   * automatically when omitted.
+   */
+  idempotencyKey?: string;
+}
+
 export interface SendEmailInput {
   from: string;
   to: string | readonly string[];

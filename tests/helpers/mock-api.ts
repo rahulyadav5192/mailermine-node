@@ -8,7 +8,10 @@ export interface RecordedRequest {
   body: unknown;
 }
 
-export function createMockClient(responses: globalThis.Response[]): {
+export function createMockClient(
+  responses: Array<globalThis.Response | Error>,
+  options: { maxRetries?: number; maxRetryDelay?: number } = {},
+): {
   client: MailerMine;
   history: RecordedRequest[];
 } {
@@ -30,6 +33,9 @@ export function createMockClient(responses: globalThis.Response[]): {
     if (next === undefined) {
       throw new Error('No mocked response remaining for MailerMine request.');
     }
+    if (next instanceof Error) {
+      throw next;
+    }
 
     return next;
   };
@@ -39,6 +45,9 @@ export function createMockClient(responses: globalThis.Response[]): {
       apiKey: 'test-api-key',
       baseUrl: 'https://api.example.test/api/v1',
       fetchApi,
+      // Existing tests assert single-request behaviour; retry tests opt in.
+      maxRetries: options.maxRetries ?? 0,
+      maxRetryDelay: options.maxRetryDelay ?? 0,
     }),
     history,
   };
