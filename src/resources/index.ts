@@ -38,6 +38,7 @@ export type {
   Project,
   ProjectEnvironment,
   SendEmailInput,
+  SendEmailOptions,
   SortDirection,
   Template,
   TemplateBrandingInput,

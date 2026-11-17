@@ -1,5 +1,7 @@
 import {
   DEFAULT_BASE_URL,
+  DEFAULT_MAX_RETRIES,
+  DEFAULT_MAX_RETRY_DELAY_MS,
   DEFAULT_TIMEOUT_MS,
   DEFAULT_USER_AGENT,
 } from '../constants.js';
@@ -15,6 +17,8 @@ export class Configuration implements ResolvedConfiguration {
   readonly baseUrl: string;
   readonly timeout: number;
   readonly userAgent: string;
+  readonly maxRetries: number;
+  readonly maxRetryDelay: number;
   readonly fetchApi?: typeof fetch;
 
   constructor(options: ConfigurationOptions) {
@@ -22,6 +26,14 @@ export class Configuration implements ResolvedConfiguration {
     this.baseUrl = normalizeBaseUrl(options.baseUrl ?? DEFAULT_BASE_URL);
     this.timeout = normalizeTimeout(options.timeout ?? DEFAULT_TIMEOUT_MS);
     this.userAgent = normalizeUserAgent(options.userAgent ?? DEFAULT_USER_AGENT);
+    this.maxRetries = normalizeNonNegativeInteger(
+      options.maxRetries ?? DEFAULT_MAX_RETRIES,
+      'maxRetries',
+    );
+    this.maxRetryDelay = normalizeNonNegativeInteger(
+      options.maxRetryDelay ?? DEFAULT_MAX_RETRY_DELAY_MS,
+      'maxRetryDelay',
+    );
     if (options.fetchApi !== undefined) {
       this.fetchApi = options.fetchApi;
     }
@@ -47,6 +59,8 @@ export class Configuration implements ResolvedConfiguration {
       baseUrl: this.baseUrl,
       timeout: this.timeout,
       userAgent: this.userAgent,
+      maxRetries: this.maxRetries,
+      maxRetryDelay: this.maxRetryDelay,
     };
 
     if (this.fetchApi !== undefined) {
@@ -55,6 +69,14 @@ export class Configuration implements ResolvedConfiguration {
 
     return snapshot;
   }
+}
+
+function normalizeNonNegativeInteger(value: number, name: string): number {
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 0) {
+    throw new TypeError(`MailerMine Configuration ${name} must be a non-negative integer.`);
+  }
+
+  return value;
 }
 
 function normalizeApiKey(apiKey: string): string {

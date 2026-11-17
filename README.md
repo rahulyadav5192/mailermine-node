@@ -52,7 +52,9 @@ const mm = new MailerMine({
   apiKey: process.env.MAILERMINE_API_KEY!,
   baseUrl: DEFAULT_BASE_URL, // https://mailermine.com/api/v1
   timeout: 30_000,
-  userAgent: 'mailermine-node/1.0.0',
+  userAgent: 'mailermine-node/1.1.0',
+  maxRetries: 2,
+  maxRetryDelay: 30_000,
 });
 ```
 
@@ -62,6 +64,21 @@ const mm = new MailerMine({
 | `baseUrl` | `string` | `https://mailermine.com/api/v1` | API base URL |
 | `timeout` | `number` | `30000` | Request timeout in milliseconds |
 | `userAgent` | `string` | `mailermine-node/<version>` | User-Agent header value |
+| `maxRetries` | `number` | `2` | Automatic retries for 429/502/503/504 and network errors (`0` disables) |
+| `maxRetryDelay` | `number` | `30000` | Longest single wait between retries in ms; longer `Retry-After` throws `RateLimitError` |
+
+### Retries, rate limits and idempotency
+
+Rate-limited and temporarily unavailable requests are retried with backoff,
+honouring `Retry-After`. Email sends always carry an `Idempotency-Key`, so a
+retry is never delivered twice. Pass your own key to make retries from your
+queue or another process safe too:
+
+```ts
+await mm.emails.send(message, { idempotencyKey: `order-${order.id}-receipt` });
+
+mm.rateLimit?.remaining; // from the latest response's X-RateLimit-* headers
+```
 
 ## Emails
 
@@ -304,9 +321,11 @@ const deliveries = await mm.webhooks.deliveries(webhook.data.id);
 await mm.webhooks.disable(webhook.data.id);
 await mm.webhooks.rotateSecret(webhook.data.id);
 
-// Verify an incoming signature locally (HMAC-SHA256).
+// Verify an incoming delivery (HMAC-SHA256 over "{timestamp}.{rawBody}";
+// deliveries older than 5 minutes are rejected). Use the raw, unparsed body.
 import { Webhooks } from '@mailermine/node';
-const valid = Webhooks.verify(rawBody, signatureHeader, signingSecret);
+const valid = Webhooks.verifyHeaders(rawBody, req.headers, signingSecret);
+// or: Webhooks.verify(rawBody, signatureHeader, signingSecret, timestampHeader)
 ```
 
 Also available: `get`, `list`, `update`, `delete`, `test`, `enable`, `delivery`, `logs`, `failures`, `replay`, and `retry`.
@@ -330,11 +349,16 @@ await mm.suppressions.remove(added.data.id);
 | Status | Exception |
 | --- | --- |
 | 401 | `AuthenticationError` |
+| 403 (missing API key scope) | `MissingScopeError` (subclass of `PlanError`, has `missingScopes`) |
 | 403 | `PlanError` |
 | 404 | `NotFoundError` |
 | 422 | `ValidationError` |
 | 429 | `RateLimitError` |
 | 5xx / other | `ApiError` |
+
+Every error has `status`, `body`, `rateLimit` and `isRetryable`. `Scopes` and
+`ScopePresets` list the API key scopes, e.g.
+`mm.apiKeys.create(projectId, { name: 'Mailer', scopes: ScopePresets.sendingOnly })`.
 
 ## Development
 

@@ -19,10 +19,8 @@ import type {
 } from '../../generated/src/models/index.js';
 import { Configuration as GeneratedConfiguration } from '../../generated/src/runtime.js';
 import type { ResolvedConfiguration } from '../config/types.js';
-import {
-  createDeliverabilityApis,
-  type DeliverabilityApis,
-} from './deliverability-apis.js';
+import { createDeliverabilityApis, type DeliverabilityApis } from './deliverability-apis.js';
+import { createResilientFetch, type TransportState } from './http.js';
 import { createMarketingApis, type MarketingApis } from './marketing-apis.js';
 
 export type {
@@ -46,7 +44,7 @@ export type {
 } from './marketing-apis.js';
 
 export interface InternalEmailsApi {
-  send(body: object): Promise<unknown>;
+  send(body: object, options?: { idempotencyKey?: string }): Promise<unknown>;
   list(query: object): Promise<unknown>;
   get(messageId: string): Promise<unknown>;
   events(messageId: string): Promise<unknown>;
@@ -97,11 +95,14 @@ export interface InternalApis extends MarketingApis, DeliverabilityApis {
   templates: InternalTemplatesApi;
 }
 
-export function createInternalApis(configuration: ResolvedConfiguration): InternalApis {
+export function createInternalApis(
+  configuration: ResolvedConfiguration,
+  state: TransportState = { lastRateLimit: null },
+): InternalApis {
   const generated = new GeneratedConfiguration({
     basePath: configuration.baseUrl,
     accessToken: configuration.apiKey,
-    fetchApi: createTimeoutFetch(configuration.timeout, configuration.fetchApi),
+    fetchApi: createResilientFetch(configuration, state),
     headers: {
       Accept: 'application/json',
       'User-Agent': configuration.userAgent,
@@ -125,8 +126,11 @@ class EmailsAdapter implements InternalEmailsApi {
     private readonly messages: MessagesApi,
   ) {}
 
-  send(body: object): Promise<unknown> {
-    return this.sending.sendEmail({ sendEmailRequest: body as SendEmailRequest });
+  send(body: object, options: { idempotencyKey?: string } = {}): Promise<unknown> {
+    return this.sending.sendEmail({
+      sendEmailRequest: body as SendEmailRequest,
+      ...(options.idempotencyKey !== undefined ? { idempotencyKey: options.idempotencyKey } : {}),
+    });
   }
 
   list(query: object): Promise<unknown> {
@@ -278,19 +282,4 @@ class TemplatesAdapter implements InternalTemplatesApi {
   delete(templateId: string): Promise<unknown> {
     return this.api.deleteTemplate({ template: templateId });
   }
-}
-
-function createTimeoutFetch(timeout: number, fetchApi?: typeof fetch): typeof fetch {
-  const baseFetch = fetchApi ?? globalThis.fetch.bind(globalThis);
-
-  return (input, init) => {
-    const timeoutSignal = AbortSignal.timeout(timeout);
-    const existingSignal = init?.signal;
-    const signal =
-      existingSignal == null
-        ? timeoutSignal
-        : AbortSignal.any([existingSignal, timeoutSignal]);
-
-    return baseFetch(input, { ...init, signal });
-  };
 }

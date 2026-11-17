@@ -1,16 +1,14 @@
-import {
-  FetchError,
-  RequiredError,
-  ResponseError,
-} from '../../generated/src/runtime.js';
+import { FetchError, RequiredError, ResponseError } from '../../generated/src/runtime.js';
 import {
   ApiError,
   AuthenticationError,
+  MissingScopeError,
   NotFoundError,
   PlanError,
   RateLimitError,
   ValidationError,
 } from '../errors/index.js';
+import { RateLimitInfo } from '../support/rate-limit.js';
 import { toCamelRecord } from '../support/serialization.js';
 
 export async function mapGeneratedError(error: unknown): Promise<ApiError> {
@@ -30,44 +28,61 @@ async function mapError(error: unknown): Promise<ApiError> {
       error.response.statusText || 'MailerMine API request failed',
     );
     const status = error.response.status;
+    const mapped = mapStatus(status, message, body, record, error.response.headers);
+    mapped.rateLimit = RateLimitInfo.fromHeaders(error.response.headers);
 
+    return mapped;
+  }
+
+  return mapTransportOrClientError(error);
+}
+
+function mapStatus(
+  status: number,
+  message: string,
+  body: unknown,
+  record: Record<string, unknown>,
+  headers: Headers,
+): ApiError {
+  {
     switch (status) {
       case 401:
         return new AuthenticationError(message, status, body);
-      case 403:
-        return new PlanError(message, status, body);
+      case 403: {
+        const missingScopes = getMissingScopes(record['errors']);
+        return missingScopes.length > 0
+          ? new MissingScopeError(message, status, missingScopes, body)
+          : new PlanError(message, status, body);
+      }
       case 404:
         return new NotFoundError(message, status, body);
       case 422:
-        return new ValidationError(
-          message,
-          status,
-          getValidationErrors(record['errors']),
-          body,
-        );
+        return new ValidationError(message, status, getValidationErrors(record['errors']), body);
       case 429:
         return new RateLimitError(
           message,
           status,
-          parseRetryAfter(error.response.headers.get('retry-after')),
+          parseRetryAfter(headers.get('retry-after')),
           body,
         );
       default:
         return new ApiError(message, status, body);
     }
   }
+}
 
+function getMissingScopes(errors: unknown): string[] {
+  if (typeof errors !== 'object' || errors === null || Array.isArray(errors)) return [];
+  const scope = (errors as Record<string, unknown>)['scope'];
+  const list = typeof scope === 'string' ? [scope] : Array.isArray(scope) ? scope : [];
+  return list.filter((value): value is string => typeof value === 'string' && value !== '');
+}
+
+function mapTransportOrClientError(error: unknown): ApiError {
   if (error instanceof RequiredError) {
     const field = sanitizeRequiredField(error.field);
-    const message = field
-      ? `The ${field} field is required.`
-      : 'A required field is missing.';
-    return new ValidationError(
-      message,
-      422,
-      field ? { [field]: [message] } : {},
-      undefined,
-    );
+    const message = field ? `The ${field} field is required.` : 'A required field is missing.';
+    return new ValidationError(message, 422, field ? { [field]: [message] } : {}, undefined);
   }
 
   if (error instanceof FetchError) {
@@ -75,13 +90,13 @@ async function mapError(error: unknown): Promise<ApiError> {
   }
 
   if (error instanceof ApiError) {
-    return cloneSdkError(error);
+    const cloned = cloneSdkError(error);
+    cloned.rateLimit = error.rateLimit;
+    return cloned;
   }
 
   const message =
-    error instanceof Error
-      ? sanitizeText(error.message)
-      : 'Unknown MailerMine SDK error';
+    error instanceof Error ? sanitizeText(error.message) : 'Unknown MailerMine SDK error';
   return new ApiError(message, 0);
 }
 
@@ -100,9 +115,7 @@ async function readErrorBody(response: globalThis.Response): Promise<unknown> {
 
 function getMessage(record: Record<string, unknown>, fallback: string): string {
   const value = record['message'] ?? record['error'];
-  return sanitizeText(
-    typeof value === 'string' && value !== '' ? value : fallback,
-  );
+  return sanitizeText(typeof value === 'string' && value !== '' ? value : fallback);
 }
 
 function getValidationErrors(value: unknown): Readonly<Record<string, readonly string[]>> {
@@ -132,9 +145,7 @@ function parseRetryAfter(value: string | null): number | null {
 
 function getTransportMessage(cause: Error): string {
   const message = sanitizeText(cause.message);
-  return message === ''
-    ? 'Unable to connect to the MailerMine API.'
-    : message;
+  return message === '' ? 'Unable to connect to the MailerMine API.' : message;
 }
 
 function cloneSdkError(error: ApiError): ApiError {
@@ -142,23 +153,16 @@ function cloneSdkError(error: ApiError): ApiError {
   const body = sanitizeValue(error.body);
 
   if (error instanceof ValidationError) {
-    return new ValidationError(
-      message,
-      error.status,
-      getValidationErrors(error.errors),
-      body,
-    );
+    return new ValidationError(message, error.status, getValidationErrors(error.errors), body);
   }
   if (error instanceof RateLimitError) {
-    return new RateLimitError(
-      message,
-      error.status,
-      error.retryAfter,
-      body,
-    );
+    return new RateLimitError(message, error.status, error.retryAfter, body);
   }
   if (error instanceof AuthenticationError) {
     return new AuthenticationError(message, error.status, body);
+  }
+  if (error instanceof MissingScopeError) {
+    return new MissingScopeError(message, error.status, [...error.missingScopes], body);
   }
   if (error instanceof PlanError) {
     return new PlanError(message, error.status, body);
@@ -176,9 +180,7 @@ const GENERATED_REQUIRED_FIELD_PATTERN =
   /(?:Request|Response|Body|Params?)$|^(?:request|response|body|params?)$/i;
 
 function sanitizeText(value: string): string {
-  return value
-    .replace(GENERATED_DETAIL_PATTERN, 'MailerMine API error')
-    .trim();
+  return value.replace(GENERATED_DETAIL_PATTERN, 'MailerMine API error').trim();
 }
 
 function sanitizeRequiredField(field: string): string | undefined {
@@ -191,11 +193,7 @@ function sanitizeRequiredField(field: string): string | undefined {
 }
 
 function sanitizeValue(value: unknown, seen = new WeakSet<object>()): unknown {
-  if (
-    value === null ||
-    typeof value === 'number' ||
-    typeof value === 'boolean'
-  ) {
+  if (value === null || typeof value === 'number' || typeof value === 'boolean') {
     return value;
   }
 
@@ -228,9 +226,7 @@ function sanitizeValue(value: unknown, seen = new WeakSet<object>()): unknown {
   return Object.fromEntries(
     Object.entries(value).flatMap(([key, item]) => {
       const sanitized = sanitizeValue(item, seen);
-      return sanitized === undefined
-        ? []
-        : [[sanitizeText(key), sanitized]];
+      return sanitized === undefined ? [] : [[sanitizeText(key), sanitized]];
     }),
   );
 }
