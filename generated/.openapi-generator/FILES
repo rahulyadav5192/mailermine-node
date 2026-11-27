@@ -91,6 +91,8 @@ docs/CreateCustomFieldRequest.md
 docs/CreateDomainRequest.md
 docs/CreateListRequest.md
 docs/CreateProjectRequest.md
+docs/CreateProjectRequestSettings.md
+docs/CreateProjectRequestSettingsTracking.md
 docs/CreateSegmentRequest.md
 docs/CreateSegmentRequestRules.md
 docs/CreateSuppressionRequest.md
@@ -168,6 +170,7 @@ docs/SegmentResponse.md
 docs/SegmentsApi.md
 docs/SendEmailRequest.md
 docs/SendEmailRequestAttachmentsInner.md
+docs/SendEmailRequestTracking.md
 docs/SendEmailResponse.md
 docs/Suppression.md
 docs/SuppressionListResponse.md

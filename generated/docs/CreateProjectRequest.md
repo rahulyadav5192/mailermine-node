@@ -12,7 +12,7 @@ Name | Type
 `environment` | string
 `timezone` | string
 `defaultSender` | string
-`settings` | object
+`settings` | [CreateProjectRequestSettings](CreateProjectRequestSettings.md)
 
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)

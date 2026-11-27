@@ -86,6 +86,25 @@ describe('Emails', () => {
     });
   });
 
+  it('send passes tracking overrides through unchanged', async () => {
+    const { client, history } = createMockClient([
+      jsonResponse(202, resourceResponse({ id: 'message-2', status: 'queued' })),
+      jsonResponse(202, resourceResponse({ id: 'message-3', status: 'queued' })),
+    ]);
+
+    await client.emails.send({
+      from: 'hello@mailermine.com',
+      to: 'john@example.com',
+      subject: 'Reset your password',
+      html: '<a href="https://example.com/reset">Reset</a>',
+      tracking: { opens: true, clicks: false },
+    });
+    await client.emails.send({ from: 'a@b.com', to: 'c@d.com', subject: 'S', text: 'T' });
+
+    expect(history[0]?.body).toMatchObject({ tracking: { opens: true, clicks: false } });
+    expect(history[1]?.body).not.toHaveProperty('tracking');
+  });
+
   it('list, get, and events map through MessagesApi paths', async () => {
     const { client, history } = createMockClient([
       jsonResponse(

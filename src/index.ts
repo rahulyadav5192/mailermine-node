@@ -115,6 +115,7 @@ export type {
   SegmentRuleCondition,
   SegmentRules,
   ScheduleCampaignInput,
+  EmailTrackingInput,
   SendEmailInput,
   SendEmailOptions,
   SortDirection,
@@ -149,6 +150,7 @@ export type {
   Webhook,
   WebhookDelivery,
   WebhookDeliveryListOptions,
+  WebhookEventPayload,
   WebhookEventType,
   WebhookListOptions,
 } from './resources/index.js';

@@ -19,6 +19,7 @@ Name | Type
 `metadata` | object
 `tags` | Array&lt;string&gt;
 `headers` | object
+`tracking` | [SendEmailRequestTracking](SendEmailRequestTracking.md)
 `attachments` | [Array&lt;SendEmailRequestAttachmentsInner&gt;](SendEmailRequestAttachmentsInner.md)
 
 

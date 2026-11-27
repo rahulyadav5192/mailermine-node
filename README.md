@@ -52,7 +52,7 @@ const mm = new MailerMine({
   apiKey: process.env.MAILERMINE_API_KEY!,
   baseUrl: DEFAULT_BASE_URL, // https://mailermine.com/api/v1
   timeout: 30_000,
-  userAgent: 'mailermine-node/1.1.0',
+  userAgent: 'mailermine-node/1.2.0',
   maxRetries: 2,
   maxRetryDelay: 30_000,
 });
@@ -108,6 +108,19 @@ await mm.emails.send({
 const messages = await mm.emails.list({ status: 'delivered', perPage: 25 });
 const message = await mm.emails.get(messages.items[0]!.id);
 const events = await mm.emails.events(message.data.id);
+
+// Open/click tracking follows the project defaults; override per email.
+// (Add data-mm-notrack to an <a> tag to leave one link untracked.)
+await mm.emails.send({
+  from: 'hello@example.com',
+  to: 'john@example.com',
+  subject: 'Reset your password',
+  html: '<a href="https://app.example.com/reset?t=abc">Reset password</a>',
+  tracking: { opens: true, clicks: false },
+});
+
+// Project defaults
+await mm.projects.update(projectId, { settings: { tracking: { opens: true, clicks: true } } });
 ```
 
 ## Domains
@@ -326,6 +339,11 @@ await mm.webhooks.rotateSecret(webhook.data.id);
 import { Webhooks } from '@mailermine/node';
 const valid = Webhooks.verifyHeaders(rawBody, req.headers, signingSecret);
 // or: Webhooks.verify(rawBody, signatureHeader, signingSecret, timestampHeader)
+
+// Typed body: email.clicked includes the clicked link.
+import type { WebhookEventPayload } from '@mailermine/node';
+const event = JSON.parse(rawBody) as WebhookEventPayload;
+if (event.type === 'email.clicked') console.log(event.click?.url);
 ```
 
 Also available: `get`, `list`, `update`, `delete`, `test`, `enable`, `delivery`, `logs`, `failures`, `replay`, and `retry`.

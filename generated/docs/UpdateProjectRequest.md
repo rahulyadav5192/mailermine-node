@@ -12,7 +12,7 @@ Name | Type
 `environment` | string
 `timezone` | string
 `defaultSender` | string
-`settings` | object
+`settings` | [CreateProjectRequestSettings](CreateProjectRequestSettings.md)
 `status` | string
 
 
