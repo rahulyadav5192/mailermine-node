@@ -70,6 +70,38 @@ export type WebhookEventType =
   | 'project.created'
   | 'api_key.created';
 
+/**
+ * Body of a webhook delivery, as sent by MailerMine (keys are snake_case on
+ * the wire). Verify the signature with {@link Webhooks.verifyHeaders} before
+ * trusting it.
+ */
+export interface WebhookEventPayload {
+  id: string;
+  type: WebhookEventType;
+  created_at: string;
+  project: { id: string; name: string };
+  email: {
+    id: string;
+    message_id: string | null;
+    from: string;
+    to: string;
+    subject: string;
+    status: string;
+    provider: string;
+    tags: string[];
+    metadata: Record<string, unknown>;
+  };
+  /** Present on `email.clicked`. */
+  click?: {
+    url: string | null;
+    link_id: string | null;
+    is_unique: boolean | null;
+    clicked_at: string | null;
+  };
+  /** Present on `email.opened`. */
+  open?: { is_unique: boolean | null; opened_at: string | null };
+}
+
 export interface CreateWebhookInput {
   name: string;
   url: string;

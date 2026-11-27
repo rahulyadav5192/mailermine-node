@@ -27,6 +27,24 @@ const project = {
 };
 
 describe('Projects', () => {
+  it('sends settings.tracking and keeps custom settings keys', async () => {
+    const { client, history } = createMockClient([
+      jsonResponse(201, resourceResponse(project, 'Created.')),
+      jsonResponse(200, resourceResponse(project)),
+    ]);
+
+    await client.projects.create({
+      name: 'P',
+      settings: { region: 'eu-west-1', tracking: { opens: true, clicks: false } },
+    });
+    await client.projects.update('project-1', { settings: { tracking: { clicks: true } } });
+
+    expect(history[0]?.body).toMatchObject({
+      settings: { region: 'eu-west-1', tracking: { opens: true, clicks: false } },
+    });
+    expect(history[1]?.body).toMatchObject({ settings: { tracking: { clicks: true } } });
+  });
+
   it('implements create, list, get, update, and delete', async () => {
     const { client, history } = createMockClient([
       jsonResponse(201, resourceResponse(project, 'Created.')),

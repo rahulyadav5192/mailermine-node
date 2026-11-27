@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-27
+
+### Added
+
+- `emails.send()` accepts `tracking: { opens?, clicks? }` to turn open/click
+  tracking on or off for one email (`EmailTrackingInput`). Omitted keys use
+  the project default.
+- Project `settings.tracking` (`opens`, `clicks`) sets a project's tracking
+  defaults on `projects.create()` / `update()`.
+- `WebhookEventPayload` type for webhook bodies, including the new `click`
+  (`url`, `link_id`, `is_unique`, `clicked_at`) block on `email.clicked` and
+  `open` (`is_unique`, `opened_at`) on `email.opened`.
+
+### Changed
+
+- Regenerated the client from the latest API spec (openapi-generator 7.23.0).
+
 ## [1.1.0] - 2026-11-17
 
 ### Added

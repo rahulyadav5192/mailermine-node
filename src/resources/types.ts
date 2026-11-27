@@ -31,6 +31,16 @@ export interface SendEmailOptions {
   idempotencyKey?: string;
 }
 
+/**
+ * Open/click tracking for one email. Omitted (or `null`) keys use the
+ * project default. Plan limits and sender trust rules still apply. To leave a
+ * single link untracked, add `data-mm-notrack` to its `<a>` tag.
+ */
+export interface EmailTrackingInput {
+  opens?: boolean | null;
+  clicks?: boolean | null;
+}
+
 export interface SendEmailInput {
   from: string;
   to: string | readonly string[];
@@ -46,6 +56,8 @@ export interface SendEmailInput {
   tags?: readonly string[];
   headers?: Readonly<Record<string, string>>;
   attachments?: readonly EmailAttachmentInput[];
+  /** Turn open/click tracking on or off for this email (overrides the project default). */
+  tracking?: EmailTrackingInput;
   /** ISO-8601 delivery time. Passed through when supported by the API account. */
   scheduledAt?: string;
 }

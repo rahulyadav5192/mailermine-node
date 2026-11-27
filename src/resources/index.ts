@@ -37,6 +37,7 @@ export type {
   PreviewTemplateInput,
   Project,
   ProjectEnvironment,
+  EmailTrackingInput,
   SendEmailInput,
   SendEmailOptions,
   SortDirection,
@@ -125,6 +126,7 @@ export type {
   Webhook,
   WebhookDelivery,
   WebhookDeliveryListOptions,
+  WebhookEventPayload,
   WebhookEventType,
   WebhookListOptions,
 } from './deliverability-types.js';
