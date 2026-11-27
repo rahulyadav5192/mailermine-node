@@ -3141,11 +3141,11 @@ export interface CreateProjectRequest {
    */
   defaultSender?: string | null;
   /**
-   * Extensible project settings.
-   * @type {object}
+   *
+   * @type {CreateProjectRequestSettings}
    * @memberof CreateProjectRequest
    */
-  settings?: object;
+  settings?: CreateProjectRequestSettings;
 }
 
 /**
@@ -3160,6 +3160,39 @@ export const CreateProjectRequestEnvironmentEnum = {
 export type CreateProjectRequestEnvironmentEnum =
   (typeof CreateProjectRequestEnvironmentEnum)[keyof typeof CreateProjectRequestEnvironmentEnum];
 
+/**
+ * Extensible project settings. `tracking.opens` and `tracking.clicks` (booleans, default true) set the project default for open and click tracking.
+ * @export
+ * @interface CreateProjectRequestSettings
+ */
+export interface CreateProjectRequestSettings {
+  [key: string]: any | any;
+  /**
+   *
+   * @type {CreateProjectRequestSettingsTracking}
+   * @memberof CreateProjectRequestSettings
+   */
+  tracking?: CreateProjectRequestSettingsTracking;
+}
+/**
+ * Project default for open and click tracking. Omitted keys default to true.
+ * @export
+ * @interface CreateProjectRequestSettingsTracking
+ */
+export interface CreateProjectRequestSettingsTracking {
+  /**
+   *
+   * @type {boolean}
+   * @memberof CreateProjectRequestSettingsTracking
+   */
+  opens?: boolean | null;
+  /**
+   *
+   * @type {boolean}
+   * @memberof CreateProjectRequestSettingsTracking
+   */
+  clicks?: boolean | null;
+}
 /**
  *
  * @export
@@ -5828,6 +5861,12 @@ export interface SendEmailRequest {
    */
   headers?: object;
   /**
+   *
+   * @type {SendEmailRequestTracking}
+   * @memberof SendEmailRequest
+   */
+  tracking?: SendEmailRequestTracking;
+  /**
    * Base64-encoded file attachments.
    * @type {Array<SendEmailRequestAttachmentsInner>}
    * @memberof SendEmailRequest
@@ -5858,6 +5897,25 @@ export interface SendEmailRequestAttachmentsInner {
    * @memberof SendEmailRequestAttachmentsInner
    */
   contentType?: string | null;
+}
+/**
+ * Turn open and click tracking on or off for this email, overriding the project default. Omitted or null keys use the project default. Plan limits and sender trust rules still apply, so tracking may stay off even when requested. Add `data-mm-notrack` to an `<a>` tag to exclude a single link.
+ * @export
+ * @interface SendEmailRequestTracking
+ */
+export interface SendEmailRequestTracking {
+  /**
+   *
+   * @type {boolean}
+   * @memberof SendEmailRequestTracking
+   */
+  opens?: boolean | null;
+  /**
+   *
+   * @type {boolean}
+   * @memberof SendEmailRequestTracking
+   */
+  clicks?: boolean | null;
 }
 /**
  *
@@ -7007,11 +7065,11 @@ export interface UpdateProjectRequest {
    */
   defaultSender?: string | null;
   /**
-   * Replacement settings object.
-   * @type {object}
+   *
+   * @type {CreateProjectRequestSettings}
    * @memberof UpdateProjectRequest
    */
-  settings?: object;
+  settings?: CreateProjectRequestSettings;
   /**
    * Archive or restore the project.
    * @type {UpdateProjectRequestStatusEnum}
