@@ -13,6 +13,7 @@ docs/AnalyticsDomains.md
 docs/AnalyticsDomainsDomainsInner.md
 docs/AnalyticsDomainsResponse.md
 docs/AnalyticsEngagement.md
+docs/AnalyticsEngagementByTrackingDomainInner.md
 docs/AnalyticsEngagementResponse.md
 docs/AnalyticsMessages.md
 docs/AnalyticsMessagesDailyInner.md
@@ -24,6 +25,7 @@ docs/AnalyticsOverviewRecentActivityInner.md
 docs/AnalyticsOverviewResponse.md
 docs/AnalyticsOverviewTopCampaignsInner.md
 docs/AnalyticsOverviewTopLinksInner.md
+docs/AnalyticsOverviewTracking.md
 docs/AnalyticsProjects.md
 docs/AnalyticsProjectsProjectsInner.md
 docs/AnalyticsProjectsResponse.md

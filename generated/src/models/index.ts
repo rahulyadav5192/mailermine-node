@@ -300,13 +300,13 @@ export interface AnalyticsEngagement {
    */
   uniqueClicks: number;
   /**
-   * Unique opens / delivered as a percentage.
+   * Unique opens / delivered emails that had open tracking, as a percentage.
    * @type {number}
    * @memberof AnalyticsEngagement
    */
   openRate: number;
   /**
-   * Click-through rate: clicks / delivered as a percentage.
+   * Click-through rate: unique clicks / delivered emails that had click tracking, as a percentage.
    * @type {number}
    * @memberof AnalyticsEngagement
    */
@@ -329,6 +329,109 @@ export interface AnalyticsEngagement {
    * @memberof AnalyticsEngagement
    */
   delivered: number;
+  /**
+   * Delivered emails that had open tracking (the open-rate denominator).
+   * @type {number}
+   * @memberof AnalyticsEngagement
+   */
+  opensTrackedDelivered?: number | null;
+  /**
+   * Delivered emails that had click tracking (the CTR denominator).
+   * @type {number}
+   * @memberof AnalyticsEngagement
+   */
+  clicksTrackedDelivered?: number | null;
+  /**
+   * Volume and engagement per custom tracking domain. The row with `hostname: null` is the shared host. Empty when no tracking domain is configured.
+   * @type {Array<AnalyticsEngagementByTrackingDomainInner>}
+   * @memberof AnalyticsEngagement
+   */
+  byTrackingDomain?: Array<AnalyticsEngagementByTrackingDomainInner> | null;
+}
+/**
+ *
+ * @export
+ * @interface AnalyticsEngagementByTrackingDomainInner
+ */
+export interface AnalyticsEngagementByTrackingDomainInner {
+  /**
+   *
+   * @type {string}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  id: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  hostname: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  status: string;
+  /**
+   *
+   * @type {string}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  statusLabel: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  isDefault: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  lastCheckedAt: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  lastError: string | null;
+  /**
+   *
+   * @type {number}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  sent: number;
+  /**
+   *
+   * @type {number}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  delivered: number;
+  /**
+   *
+   * @type {number}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  uniqueOpens: number;
+  /**
+   *
+   * @type {number}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  uniqueClicks: number;
+  /**
+   *
+   * @type {number}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  openRate: number;
+  /**
+   *
+   * @type {number}
+   * @memberof AnalyticsEngagementByTrackingDomainInner
+   */
+  clickRate: number;
 }
 /**
  *
@@ -534,13 +637,13 @@ export interface AnalyticsOverview {
    */
   deliveryRate: number;
   /**
-   * Unique opens / delivered as a percentage.
+   * Unique opens / delivered emails that had open tracking, as a percentage.
    * @type {number}
    * @memberof AnalyticsOverview
    */
   openRate: number;
   /**
-   * Unique clicks / delivered as a percentage.
+   * Unique clicks / delivered emails that had click tracking, as a percentage.
    * @type {number}
    * @memberof AnalyticsOverview
    */
@@ -581,6 +684,18 @@ export interface AnalyticsOverview {
    * @memberof AnalyticsOverview
    */
   recentActivity: Array<AnalyticsOverviewRecentActivityInner>;
+  /**
+   *
+   * @type {AnalyticsOverviewTracking}
+   * @memberof AnalyticsOverview
+   */
+  tracking?: AnalyticsOverviewTracking;
+  /**
+   * Volume, engagement and health per custom tracking domain. The row with `hostname: null` is the shared host. Empty when no tracking domain is configured.
+   * @type {Array<AnalyticsEngagementByTrackingDomainInner>}
+   * @memberof AnalyticsOverview
+   */
+  trackingDomains?: Array<AnalyticsEngagementByTrackingDomainInner> | null;
 }
 /**
  *
@@ -742,6 +857,31 @@ export interface AnalyticsOverviewTopLinksInner {
    * @memberof AnalyticsOverviewTopLinksInner
    */
   lastClickedAt: string | null;
+}
+/**
+ * Delivered emails and how many had opens / clicks tracked (the rate denominators).
+ * @export
+ * @interface AnalyticsOverviewTracking
+ */
+export interface AnalyticsOverviewTracking {
+  /**
+   *
+   * @type {number}
+   * @memberof AnalyticsOverviewTracking
+   */
+  delivered: number;
+  /**
+   *
+   * @type {number}
+   * @memberof AnalyticsOverviewTracking
+   */
+  opensTracked: number;
+  /**
+   *
+   * @type {number}
+   * @memberof AnalyticsOverviewTracking
+   */
+  clicksTracked: number;
 }
 /**
  *

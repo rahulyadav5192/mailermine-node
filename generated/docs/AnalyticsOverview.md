@@ -17,6 +17,8 @@ Name | Type
 `topCampaigns` | [Array&lt;AnalyticsOverviewTopCampaignsInner&gt;](AnalyticsOverviewTopCampaignsInner.md)
 `topLinks` | [Array&lt;AnalyticsOverviewTopLinksInner&gt;](AnalyticsOverviewTopLinksInner.md)
 `recentActivity` | [Array&lt;AnalyticsOverviewRecentActivityInner&gt;](AnalyticsOverviewRecentActivityInner.md)
+`tracking` | [AnalyticsOverviewTracking](AnalyticsOverviewTracking.md)
+`trackingDomains` | [Array&lt;AnalyticsEngagementByTrackingDomainInner&gt;](AnalyticsEngagementByTrackingDomainInner.md)
 
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
